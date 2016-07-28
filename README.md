@@ -1,2 +1,2 @@
 # mongofil
-Checking if map matches mongodb query
+Checking if JSON matches mongodb query and finding matched documents in JSON array.
