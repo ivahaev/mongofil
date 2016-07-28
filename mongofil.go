@@ -3,8 +3,6 @@ package mongofil
 import (
 	"errors"
 	"regexp"
-
-	"github.com/buger/jsonparser"
 )
 
 var (
@@ -108,19 +106,4 @@ func Match(query map[string]interface{}, doc []byte) (bool, error) {
 		return false, err
 	}
 	return q.Match(doc), nil
-	for k, _v := range query {
-		val, typ, _, err := jsonparser.Get(doc, k)
-		if err != nil {
-			continue
-		}
-		switch typ {
-		case jsonparser.String:
-			v, ok := _v.(string)
-			if !ok {
-				continue
-			}
-			return string(val) == v, nil
-		}
-	}
-	return false, nil
 }
