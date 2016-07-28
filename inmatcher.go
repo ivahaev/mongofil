@@ -24,9 +24,11 @@ func NewInMatcher(propName string, arr []interface{}, invert bool) (Matcher, err
 }
 
 func (m *InMatcher) Match(doc []byte) bool {
-	m.strVal = nil
-	m.numVal = nil
-	m.boolVal = nil
+	defer func() {
+		m.strVal = nil
+		m.numVal = nil
+		m.boolVal = nil
+	}()
 	val, typ, _, err := jsonparser.Get(doc, m.propName)
 	if err != nil {
 		return false

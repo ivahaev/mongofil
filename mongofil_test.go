@@ -121,5 +121,97 @@ func TestMatch(t *testing.T) {
 				g.Assert(matched).IsFalse()
 			})
 		})
+
+		g.Describe("$gt and $gte statement", func() {
+			g.It("should return true if property value is greater then in query", func() {
+				query := map[string]interface{}{"age": map[string]interface{}{"$gt": 1}}
+				json := []byte(`{"age": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsTrue()
+			})
+			g.It("should return false if property value is smaller then on query", func() {
+				query := map[string]interface{}{"age": map[string]interface{}{"$gt": 3}}
+				json := []byte(`{"age": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsFalse()
+			})
+			g.It("should return false if property value is equal query", func() {
+				query := map[string]interface{}{"age": map[string]interface{}{"$gt": 2}}
+				json := []byte(`{"age": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsFalse()
+			})
+
+			g.It("should return true if property value is greater then in query", func() {
+				query := map[string]interface{}{"age": map[string]interface{}{"$gte": 1}}
+				json := []byte(`{"age": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsTrue()
+			})
+			g.It("should return false if property value is smaller then on query", func() {
+				query := map[string]interface{}{"age": map[string]interface{}{"$gt": 3}}
+				json := []byte(`{"age": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsFalse()
+			})
+			g.It("should return true if property value is equal query", func() {
+				query := map[string]interface{}{"age": map[string]interface{}{"$gte": 2}}
+				json := []byte(`{"age": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsTrue()
+			})
+		})
+
+		g.Describe("$lt and $lte statement", func() {
+			g.It("should return true if property value is smaller then in query", func() {
+				query := map[string]interface{}{"age": map[string]interface{}{"$lt": 10}}
+				json := []byte(`{"age": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsTrue()
+			})
+			g.It("should return false if property value is grater then on query", func() {
+				query := map[string]interface{}{"age": map[string]interface{}{"$lt": 1}}
+				json := []byte(`{"age": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsFalse()
+			})
+			g.It("should return false if property value is equal query", func() {
+				query := map[string]interface{}{"age": map[string]interface{}{"$lt": 2}}
+				json := []byte(`{"age": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsFalse()
+			})
+
+			g.It("should return true if property value is smaller then in query", func() {
+				query := map[string]interface{}{"age": map[string]interface{}{"$lte": 10}}
+				json := []byte(`{"age": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsTrue()
+			})
+			g.It("should return false if property value is greater then on query", func() {
+				query := map[string]interface{}{"age": map[string]interface{}{"$lt": 1}}
+				json := []byte(`{"age": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsFalse()
+			})
+			g.It("should return true if property value is equal query", func() {
+				query := map[string]interface{}{"age": map[string]interface{}{"$lte": 2}}
+				json := []byte(`{"age": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsTrue()
+			})
+		})
 	})
 }

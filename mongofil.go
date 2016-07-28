@@ -5,6 +5,7 @@ import (
 	"regexp"
 )
 
+// Errors
 var (
 	ErrInMustBeArray = errors.New("$in must points to array of interface{}")
 )
@@ -72,6 +73,34 @@ func NewQuery(query map[string]interface{}) (*Query, error) {
 			}
 			if val["$exists"] != nil {
 				em, err := NewExistsMatcher(k, val["$exists"])
+				if err != nil {
+					return nil, err
+				}
+				q.and = append(q.and, em)
+			}
+			if val["$gt"] != nil {
+				em, err := NewGtMatcher(k, val["$gt"], false)
+				if err != nil {
+					return nil, err
+				}
+				q.and = append(q.and, em)
+			}
+			if val["$gte"] != nil {
+				em, err := NewGtMatcher(k, val["$gte"], true)
+				if err != nil {
+					return nil, err
+				}
+				q.and = append(q.and, em)
+			}
+			if val["$lt"] != nil {
+				em, err := NewLtMatcher(k, val["$lt"], false)
+				if err != nil {
+					return nil, err
+				}
+				q.and = append(q.and, em)
+			}
+			if val["$lte"] != nil {
+				em, err := NewLtMatcher(k, val["$lte"], true)
 				if err != nil {
 					return nil, err
 				}
