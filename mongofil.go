@@ -7,7 +7,9 @@ import (
 
 // Errors
 var (
-	ErrInMustBeArray = errors.New("$in must points to array of interface{}")
+	ErrInMustBeArray  = errors.New("$in must points to array of interface{}")
+	ErrAndMustBeArray = errors.New("$and must points to array of map[string]interface{}")
+	ErrOrMustBeArray  = errors.New("$or must points to array of map[string]interface{}")
 )
 
 type Q struct {
@@ -41,78 +43,113 @@ type Query struct {
 func NewQuery(query map[string]interface{}) (*Query, error) {
 	q := Query{and: []Matcher{}, or: []Matcher{}, nor: []Matcher{}}
 	for k, v := range query {
-		switch v.(type) {
-		case string, float64, bool:
-			em, err := NewEqMatcher(k, v, false)
-			if err != nil {
-				return nil, err
+		switch k {
+		case "$and":
+			val, ok := v.([]interface{})
+			if !ok {
+				return nil, ErrAndMustBeArray
 			}
-			q.and = append(q.and, em)
-		case map[string]interface{}:
-			val := v.(map[string]interface{})
-			if val["$ne"] != nil {
-				em, err := NewEqMatcher(k, val["$ne"], true)
-				if err != nil {
-					return nil, err
-				}
-				q.and = append(q.and, em)
-			}
-			if val["$in"] != nil {
-				arr, ok := val["$in"].([]interface{})
+			for _, subv := range val {
+				subval, ok := subv.(map[string]interface{})
 				if !ok {
-					return nil, ErrInMustBeArray
+					return nil, ErrAndMustBeArray
 				}
-				inm, err := NewInMatcher(k, arr, false)
+				m, err := NewQuery(subval)
 				if err != nil {
 					return nil, err
 				}
-				q.and = append(q.and, inm)
+				q.and = append(q.and, m)
 			}
-			if val["$nin"] != nil {
-				arr, ok := val["$nin"].([]interface{})
+		case "$or":
+			val, ok := v.([]interface{})
+			if !ok {
+				return nil, ErrAndMustBeArray
+			}
+			for _, subv := range val {
+				subval, ok := subv.(map[string]interface{})
 				if !ok {
-					return nil, ErrInMustBeArray
+					return nil, ErrAndMustBeArray
 				}
-				inm, err := NewInMatcher(k, arr, true)
+				m, err := NewQuery(subval)
 				if err != nil {
 					return nil, err
 				}
-				q.and = append(q.and, inm)
+				q.or = append(q.or, m)
 			}
-			if val["$exists"] != nil {
-				em, err := NewExistsMatcher(k, val["$exists"])
+		default:
+			switch v.(type) {
+			case string, float64, bool:
+				em, err := NewEqMatcher(k, v, false)
 				if err != nil {
 					return nil, err
 				}
 				q.and = append(q.and, em)
-			}
-			if val["$gt"] != nil {
-				em, err := NewGtMatcher(k, val["$gt"], false)
-				if err != nil {
-					return nil, err
+			case map[string]interface{}:
+				val := v.(map[string]interface{})
+				if val["$ne"] != nil {
+					em, err := NewEqMatcher(k, val["$ne"], true)
+					if err != nil {
+						return nil, err
+					}
+					q.and = append(q.and, em)
 				}
-				q.and = append(q.and, em)
-			}
-			if val["$gte"] != nil {
-				em, err := NewGtMatcher(k, val["$gte"], true)
-				if err != nil {
-					return nil, err
+				if val["$in"] != nil {
+					arr, ok := val["$in"].([]interface{})
+					if !ok {
+						return nil, ErrInMustBeArray
+					}
+					inm, err := NewInMatcher(k, arr, false)
+					if err != nil {
+						return nil, err
+					}
+					q.and = append(q.and, inm)
 				}
-				q.and = append(q.and, em)
-			}
-			if val["$lt"] != nil {
-				em, err := NewLtMatcher(k, val["$lt"], false)
-				if err != nil {
-					return nil, err
+				if val["$nin"] != nil {
+					arr, ok := val["$nin"].([]interface{})
+					if !ok {
+						return nil, ErrInMustBeArray
+					}
+					inm, err := NewInMatcher(k, arr, true)
+					if err != nil {
+						return nil, err
+					}
+					q.and = append(q.and, inm)
 				}
-				q.and = append(q.and, em)
-			}
-			if val["$lte"] != nil {
-				em, err := NewLtMatcher(k, val["$lte"], true)
-				if err != nil {
-					return nil, err
+				if val["$exists"] != nil {
+					em, err := NewExistsMatcher(k, val["$exists"])
+					if err != nil {
+						return nil, err
+					}
+					q.and = append(q.and, em)
 				}
-				q.and = append(q.and, em)
+				if val["$gt"] != nil {
+					em, err := NewGtMatcher(k, val["$gt"], false)
+					if err != nil {
+						return nil, err
+					}
+					q.and = append(q.and, em)
+				}
+				if val["$gte"] != nil {
+					em, err := NewGtMatcher(k, val["$gte"], true)
+					if err != nil {
+						return nil, err
+					}
+					q.and = append(q.and, em)
+				}
+				if val["$lt"] != nil {
+					em, err := NewLtMatcher(k, val["$lt"], false)
+					if err != nil {
+						return nil, err
+					}
+					q.and = append(q.and, em)
+				}
+				if val["$lte"] != nil {
+					em, err := NewLtMatcher(k, val["$lte"], true)
+					if err != nil {
+						return nil, err
+					}
+					q.and = append(q.and, em)
+				}
 			}
 		}
 	}

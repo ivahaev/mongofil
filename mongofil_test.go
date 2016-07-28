@@ -60,6 +60,42 @@ func TestMatch(t *testing.T) {
 			})
 		})
 
+		g.Describe("$and statement", func() {
+			g.It("should return true if all query statements matched", func() {
+				query := map[string]interface{}{"$and": []interface{}{map[string]interface{}{"name": "Vasya"}, map[string]interface{}{"lastName": "Ivanov"}}}
+				json := []byte(`{"name": "Vasya", "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsTrue()
+			})
+
+			g.It("should return false if at least one of statements not matched", func() {
+				query := map[string]interface{}{"$and": []interface{}{map[string]interface{}{"name": "Vasya"}, map[string]interface{}{"middleName": "Ivanov"}}}
+				json := []byte(`{"name": "Vasya", "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsFalse()
+			})
+		})
+
+		g.Describe("$or statement", func() {
+			g.It("should return true if at least one query statements matched", func() {
+				query := map[string]interface{}{"$or": []interface{}{map[string]interface{}{"name": "Vasya"}, map[string]interface{}{"middleName": "Ivanov"}}}
+				json := []byte(`{"name": "Vasya", "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsTrue()
+			})
+
+			g.It("should return false if all  of statements not matched", func() {
+				query := map[string]interface{}{"$or": []interface{}{map[string]interface{}{"lastName": "Vasya"}, map[string]interface{}{"middleName": "Ivanov"}}}
+				json := []byte(`{"name": "Vasya", "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsFalse()
+			})
+		})
+
 		g.Describe("$in statement", func() {
 			g.It("should return true if JSON is matched query with $in statement with string value", func() {
 				query := map[string]interface{}{"name": map[string]interface{}{"$in": []interface{}{"Petya", 1, "Vasya"}}}
