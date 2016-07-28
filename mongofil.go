@@ -72,6 +72,13 @@ func NewQuery(query map[string]interface{}) (*Query, error) {
 				}
 				q.and = append(q.and, inm)
 			}
+			if val["$exists"] != nil {
+				em, err := NewExistsMatcher(k, val["$exists"])
+				if err != nil {
+					return nil, err
+				}
+				q.and = append(q.and, em)
+			}
 		}
 	}
 	return &q, nil

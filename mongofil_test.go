@@ -86,5 +86,36 @@ func TestMatch(t *testing.T) {
 				g.Assert(matched).IsFalse()
 			})
 		})
+		g.Describe("$exists statement", func() {
+			g.It("should return true if property value is exists", func() {
+				query := map[string]interface{}{"name": map[string]interface{}{"$exists": true}}
+				json := []byte(`{"name": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsTrue()
+			})
+			g.It("should return true if property value is not exists", func() {
+				query := map[string]interface{}{"middleName": map[string]interface{}{"$exists": false}}
+				json := []byte(`{"name": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsTrue()
+			})
+
+			g.It("should return false if property value is exists", func() {
+				query := map[string]interface{}{"name": map[string]interface{}{"$exists": false}}
+				json := []byte(`{"name": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsFalse()
+			})
+			g.It("should return false if property value is not exists", func() {
+				query := map[string]interface{}{"middleName": map[string]interface{}{"$exists": true}}
+				json := []byte(`{"name": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsFalse()
+			})
+		})
 	})
 }
