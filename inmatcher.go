@@ -8,10 +8,11 @@ type InMatcher struct {
 	strVal     *string
 	numVal     *float64
 	boolVal    *bool
+	invert     bool
 }
 
-func NewInMatcher(propName string, arr []interface{}) (Matcher, error) {
-	m := InMatcher{propName: propName, conditions: make([]value, len(arr))}
+func NewInMatcher(propName string, arr []interface{}, invert bool) (Matcher, error) {
+	m := InMatcher{propName: propName, conditions: make([]value, len(arr)), invert: invert}
 	for i, v := range arr {
 		val, err := createValue(v)
 		if err != nil {
@@ -42,7 +43,7 @@ func (m *InMatcher) Match(doc []byte) bool {
 				m.strVal = &s
 			}
 			if *m.strVal == v {
-				return true
+				return !m.invert
 			}
 		case jsonparser.Number:
 			v, err := _v.getFloat()
@@ -54,7 +55,7 @@ func (m *InMatcher) Match(doc []byte) bool {
 				m.numVal = &f
 			}
 			if *m.numVal == v {
-				return true
+				return !m.invert
 			}
 		case jsonparser.Boolean:
 			v, err := _v.getBool()
@@ -66,9 +67,9 @@ func (m *InMatcher) Match(doc []byte) bool {
 				m.boolVal = &b
 			}
 			if *m.boolVal == v {
-				return true
+				return !m.invert
 			}
 		}
 	}
-	return false
+	return m.invert
 }

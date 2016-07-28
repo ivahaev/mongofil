@@ -56,5 +56,35 @@ func TestMatch(t *testing.T) {
 				g.Assert(matched).IsFalse()
 			})
 		})
+		g.Describe("$nin statement", func() {
+			g.It("should return true if JSON is matched query with $nin statement with string value", func() {
+				query := map[string]interface{}{"name": map[string]interface{}{"$nin": []interface{}{"Petya", 1, "vasya"}}}
+				json := []byte(`{"name": "Vasya", "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsTrue()
+			})
+			g.It("should return false if JSON is not matched query with $in statement with string value", func() {
+				query := map[string]interface{}{"name": map[string]interface{}{"$nin": []interface{}{"Petya", 1, "Vasya"}}}
+				json := []byte(`{"name": "Vasya", "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsFalse()
+			})
+			g.It("should return true if JSON is matched query with $in statement with number value", func() {
+				query := map[string]interface{}{"name": map[string]interface{}{"$nin": []interface{}{"Petya", 2, "Vasya"}}}
+				json := []byte(`{"name": 1, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsTrue()
+			})
+			g.It("should return false if JSON is not matched query with $in statement with number value", func() {
+				query := map[string]interface{}{"name": map[string]interface{}{"$nin": []interface{}{"Petya", 2, "vasya"}}}
+				json := []byte(`{"name": 2, "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsFalse()
+			})
+		})
 	})
 }

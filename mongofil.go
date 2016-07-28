@@ -55,7 +55,18 @@ func NewQuery(query map[string]interface{}) (*Query, error) {
 				if !ok {
 					return nil, ErrInMustBeArray
 				}
-				inm, err := NewInMatcher(k, arr)
+				inm, err := NewInMatcher(k, arr, false)
+				if err != nil {
+					return nil, err
+				}
+				q.and = append(q.and, inm)
+			}
+			if val["$nin"] != nil {
+				arr, ok := val["$nin"].([]interface{})
+				if !ok {
+					return nil, ErrInMustBeArray
+				}
+				inm, err := NewInMatcher(k, arr, true)
 				if err != nil {
 					return nil, err
 				}
