@@ -2,22 +2,22 @@ package mongofil
 
 import "github.com/buger/jsonparser"
 
-type EqMatcher struct {
+type eqMatcher struct {
 	propName  string
 	condition value
 	invert    bool
 }
 
-func NewEqMatcher(propName string, in interface{}, invert bool) (Matcher, error) {
+func newEqMatcher(propName string, in interface{}, invert bool) (Matcher, error) {
 	val, err := createValue(in)
 	if err != nil {
 		return nil, err
 	}
-	m := EqMatcher{propName: propName, condition: val, invert: invert}
+	m := eqMatcher{propName: propName, condition: val, invert: invert}
 	return &m, nil
 }
 
-func (m *EqMatcher) Match(doc []byte) bool {
+func (m *eqMatcher) Match(doc []byte) bool {
 	val, typ, _, err := jsonparser.Get(doc, m.propName)
 	if err != nil {
 		return m.invert

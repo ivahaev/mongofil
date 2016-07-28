@@ -10,6 +10,7 @@ var (
 	ErrNotMustBeMap   = errors.New("$not must points to map[string]interface{}")
 )
 
+// Query is a "compiled" query
 type Query struct {
 	and []Matcher
 	or  []Matcher
@@ -17,6 +18,7 @@ type Query struct {
 	not []Matcher
 }
 
+// NewQuery returns new compiled query
 func NewQuery(query map[string]interface{}) (*Query, error) {
 	q := Query{and: []Matcher{}, or: []Matcher{}, nor: []Matcher{}, not: []Matcher{}}
 	for field, v := range query {
@@ -56,7 +58,7 @@ func NewQuery(query map[string]interface{}) (*Query, error) {
 		default:
 			switch v.(type) {
 			case string, float64, bool:
-				em, err := NewEqMatcher(field, v, false)
+				em, err := newEqMatcher(field, v, false)
 				if err != nil {
 					return nil, err
 				}
@@ -64,14 +66,14 @@ func NewQuery(query map[string]interface{}) (*Query, error) {
 			case map[string]interface{}:
 				val := v.(map[string]interface{})
 				if val["$eq"] != nil {
-					em, err := NewEqMatcher(field, val["$eq"], false)
+					em, err := newEqMatcher(field, val["$eq"], false)
 					if err != nil {
 						return nil, err
 					}
 					q.and = append(q.and, em)
 				}
 				if val["$ne"] != nil {
-					em, err := NewEqMatcher(field, val["$ne"], true)
+					em, err := newEqMatcher(field, val["$ne"], true)
 					if err != nil {
 						return nil, err
 					}
@@ -93,7 +95,7 @@ func NewQuery(query map[string]interface{}) (*Query, error) {
 					if !ok {
 						return nil, ErrInMustBeArray
 					}
-					inm, err := NewInMatcher(field, arr, false)
+					inm, err := newInMatcher(field, arr, false)
 					if err != nil {
 						return nil, err
 					}
@@ -104,42 +106,42 @@ func NewQuery(query map[string]interface{}) (*Query, error) {
 					if !ok {
 						return nil, ErrInMustBeArray
 					}
-					ninm, err := NewInMatcher(field, arr, true)
+					ninm, err := newInMatcher(field, arr, true)
 					if err != nil {
 						return nil, err
 					}
 					q.and = append(q.and, ninm)
 				}
 				if val["$exists"] != nil {
-					em, err := NewExistsMatcher(field, val["$exists"])
+					em, err := newExistsMatcher(field, val["$exists"])
 					if err != nil {
 						return nil, err
 					}
 					q.and = append(q.and, em)
 				}
 				if val["$gt"] != nil {
-					em, err := NewGtMatcher(field, val["$gt"], false)
+					em, err := newGtMatcher(field, val["$gt"], false)
 					if err != nil {
 						return nil, err
 					}
 					q.and = append(q.and, em)
 				}
 				if val["$gte"] != nil {
-					em, err := NewGtMatcher(field, val["$gte"], true)
+					em, err := newGtMatcher(field, val["$gte"], true)
 					if err != nil {
 						return nil, err
 					}
 					q.and = append(q.and, em)
 				}
 				if val["$lt"] != nil {
-					em, err := NewLtMatcher(field, val["$lt"], false)
+					em, err := newLtMatcher(field, val["$lt"], false)
 					if err != nil {
 						return nil, err
 					}
 					q.and = append(q.and, em)
 				}
 				if val["$lte"] != nil {
-					em, err := NewLtMatcher(field, val["$lte"], true)
+					em, err := newLtMatcher(field, val["$lte"], true)
 					if err != nil {
 						return nil, err
 					}
@@ -151,6 +153,7 @@ func NewQuery(query map[string]interface{}) (*Query, error) {
 	return &q, nil
 }
 
+// Match returns true if document matched compiled query
 func (q *Query) Match(doc []byte) bool {
 	for _, _q := range q.and {
 		if !_q.Match(doc) {
@@ -191,6 +194,7 @@ func (q *Query) Match(doc []byte) bool {
 }
 
 // Match returns true if JSON matched query
+// returns error if query contains errors
 func Match(query map[string]interface{}, doc []byte) (bool, error) {
 	q, err := NewQuery(query)
 	if err != nil {

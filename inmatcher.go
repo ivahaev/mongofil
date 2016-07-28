@@ -2,7 +2,7 @@ package mongofil
 
 import "github.com/buger/jsonparser"
 
-type InMatcher struct {
+type inMatcher struct {
 	propName   string
 	conditions []value
 	strVal     *string
@@ -11,8 +11,8 @@ type InMatcher struct {
 	invert     bool
 }
 
-func NewInMatcher(propName string, arr []interface{}, invert bool) (Matcher, error) {
-	m := InMatcher{propName: propName, conditions: make([]value, len(arr)), invert: invert}
+func newInMatcher(propName string, arr []interface{}, invert bool) (Matcher, error) {
+	m := inMatcher{propName: propName, conditions: make([]value, len(arr)), invert: invert}
 	for i, v := range arr {
 		val, err := createValue(v)
 		if err != nil {
@@ -23,7 +23,7 @@ func NewInMatcher(propName string, arr []interface{}, invert bool) (Matcher, err
 	return &m, nil
 }
 
-func (m *InMatcher) Match(doc []byte) bool {
+func (m *inMatcher) Match(doc []byte) bool {
 	defer func() {
 		m.strVal = nil
 		m.numVal = nil
