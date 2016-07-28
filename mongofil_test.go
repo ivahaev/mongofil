@@ -113,6 +113,23 @@ func TestMatch(t *testing.T) {
 			})
 		})
 
+		g.Describe("$eq statement", func() {
+			g.It("should return true if query is matched", func() {
+				query := map[string]interface{}{"name": map[string]interface{}{"$eq": "Vasya"}}
+				json := []byte(`{"name": "Vasya", "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsTrue()
+			})
+			g.It("should return false if query is not matched", func() {
+				query := map[string]interface{}{"name": map[string]interface{}{"$eq": "vasya"}}
+				json := []byte(`{"name": "Vasya", "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsFalse()
+			})
+		})
+
 		g.Describe("$in statement", func() {
 			g.It("should return true if JSON is matched query with $in statement with string value", func() {
 				query := map[string]interface{}{"name": map[string]interface{}{"$in": []interface{}{"Petya", 1, "Vasya"}}}

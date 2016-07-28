@@ -63,6 +63,13 @@ func NewQuery(query map[string]interface{}) (*Query, error) {
 				q.and = append(q.and, em)
 			case map[string]interface{}:
 				val := v.(map[string]interface{})
+				if val["$eq"] != nil {
+					em, err := NewEqMatcher(field, val["$eq"], false)
+					if err != nil {
+						return nil, err
+					}
+					q.and = append(q.and, em)
+				}
 				if val["$ne"] != nil {
 					em, err := NewEqMatcher(field, val["$ne"], true)
 					if err != nil {
