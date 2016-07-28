@@ -43,6 +43,23 @@ func TestMatch(t *testing.T) {
 			})
 		})
 
+		g.Describe("$ne statement", func() {
+			g.It("should return true if prop value not equals", func() {
+				query := map[string]interface{}{"name": map[string]interface{}{"$ne": "vasya"}}
+				json := []byte(`{"name": "Vasya", "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsTrue()
+			})
+			g.It("should return false if prop value equals", func() {
+				query := map[string]interface{}{"name": map[string]interface{}{"$ne": "Vasya"}}
+				json := []byte(`{"name": "Vasya", "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsFalse()
+			})
+		})
+
 		g.Describe("$in statement", func() {
 			g.It("should return true if JSON is matched query with $in statement with string value", func() {
 				query := map[string]interface{}{"name": map[string]interface{}{"$in": []interface{}{"Petya", 1, "Vasya"}}}
@@ -139,7 +156,7 @@ func TestMatch(t *testing.T) {
 			})
 		})
 
-		g.Describe("$gt and $gte statement", func() {
+		g.Describe("$gt and $gte statements", func() {
 			g.It("should return true if property value is greater then in query", func() {
 				query := map[string]interface{}{"age": map[string]interface{}{"$gt": 1}}
 				json := []byte(`{"age": 2, "lastName": "Ivanov"}`)
@@ -185,7 +202,7 @@ func TestMatch(t *testing.T) {
 			})
 		})
 
-		g.Describe("$lt and $lte statement", func() {
+		g.Describe("$lt and $lte statements", func() {
 			g.It("should return true if property value is smaller then in query", func() {
 				query := map[string]interface{}{"age": map[string]interface{}{"$lt": 10}}
 				json := []byte(`{"age": 2, "lastName": "Ivanov"}`)

@@ -43,13 +43,20 @@ func NewQuery(query map[string]interface{}) (*Query, error) {
 	for k, v := range query {
 		switch v.(type) {
 		case string, float64, bool:
-			em, err := NewEqMatcher(k, v)
+			em, err := NewEqMatcher(k, v, false)
 			if err != nil {
 				return nil, err
 			}
 			q.and = append(q.and, em)
 		case map[string]interface{}:
 			val := v.(map[string]interface{})
+			if val["$ne"] != nil {
+				em, err := NewEqMatcher(k, val["$ne"], true)
+				if err != nil {
+					return nil, err
+				}
+				q.and = append(q.and, em)
+			}
 			if val["$in"] != nil {
 				arr, ok := val["$in"].([]interface{})
 				if !ok {
