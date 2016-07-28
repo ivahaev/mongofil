@@ -35,10 +35,11 @@ type Q struct {
 type Query struct {
 	and []Matcher
 	or  []Matcher
+	nor []Matcher
 }
 
 func NewQuery(query map[string]interface{}) (*Query, error) {
-	q := Query{and: []Matcher{}, or: []Matcher{}}
+	q := Query{and: []Matcher{}, or: []Matcher{}, nor: []Matcher{}}
 	for k, v := range query {
 		switch v.(type) {
 		case string, float64, bool:
@@ -118,12 +119,26 @@ func (q *Query) Match(doc []byte) bool {
 		}
 	}
 	if len(q.or) != 0 {
-		for _, _q := range q.or {
-			if _q.Match(doc) {
-				return true
+		var matched bool
+		for i := 0; i < len(q.or) && !matched; i++ {
+			if q.or[i].Match(doc) {
+				matched = true
 			}
 		}
-		return false
+		if !matched {
+			return false
+		}
+	}
+	if len(q.nor) != 0 {
+		var matched bool
+		for i := 0; i < len(q.nor) && !matched; i++ {
+			if q.nor[i].Match(doc) {
+				matched = true
+			}
+		}
+		if matched {
+			return false
+		}
 	}
 	return true
 }

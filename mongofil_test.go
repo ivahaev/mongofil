@@ -9,6 +9,23 @@ import (
 func TestMatch(t *testing.T) {
 	g := goblin.Goblin(t)
 	g.Describe("#Match", func() {
+		g.Describe("empty query", func() {
+			g.It("should return true if query is empty", func() {
+				query := map[string]interface{}{}
+				json := []byte(`{"name": "Vasya", "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsTrue()
+			})
+			g.It("should return false if JSON is not matched simple query with string value", func() {
+				query := map[string]interface{}{"name": "vasya"}
+				json := []byte(`{"name": "Vasya", "lastName": "Ivanov"}`)
+				matched, err := Match(query, json)
+				g.Assert(err == nil).IsTrue()
+				g.Assert(matched).IsFalse()
+			})
+		})
+
 		g.Describe("simple query", func() {
 			g.It("should return true if JSON is matched simple query with string value", func() {
 				query := map[string]interface{}{"name": "Vasya"}
