@@ -2,7 +2,7 @@
 [![Build Status](https://travis-ci.org/ivahaev/mongofil.svg?branch=master)](https://travis-ci.org/ivahaev/mongofil)
 [![Coverage Status](https://coveralls.io/repos/github/ivahaev/mongofil/badge.svg?branch=master)](https://coveralls.io/github/ivahaev/mongofil?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ivahaev/mongofil)](https://goreportcard.com/report/github.com/ivahaev/mongofil)
-[![License](https://img.shields.io/badge/license-MIT%20v3-blue.svg)](https://github.com/github.com/ivahaev/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/ivahaev/mongofil/blob/master/LICENSE)
 
 # mongofil
 Checking if JSON matches mongodb query and finding matched documents in JSON array.
