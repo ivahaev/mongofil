@@ -1,0 +1,10 @@
+language: go
+os:
+  - linux
+go:
+  - 1.6.3
+before_install:
+  - go get -u github.com/buger/jsonparser
+script:
+  - go test
+after_success:
