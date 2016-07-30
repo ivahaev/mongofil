@@ -1,4 +1,6 @@
+[![GoDoc](https://godoc.org/github.com/ivahaev/mongofil?status.svg)](https://godoc.org/github.com/ivahaev/mongofil)
 [![Build Status](https://travis-ci.org/ivahaev/mongofil.svg?branch=master)](https://travis-ci.org/ivahaev/mongofil)
+[![Coverage Status](https://coveralls.io/repos/github/ivahaev/mongofil/badge.svg?branch=master)](https://coveralls.io/github/ivahaev/mongofil?branch=master)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ivahaev/mongofil)](https://goreportcard.com/report/github.com/ivahaev/mongofil)
 [![License](https://img.shields.io/badge/license-MIT%20v3-blue.svg)](https://github.com/github.com/ivahaev/blob/master/LICENSE)
 

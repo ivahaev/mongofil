@@ -5,6 +5,9 @@ go:
   - 1.6.3
 before_install:
   - go get -u github.com/buger/jsonparser
+  - go get github.com/mattn/goveralls
+  - go get golang.org/x/tools/cmd/cover
 script:
   - go test
+  - $HOME/gopath/bin/goveralls -service=travis-ci
 after_success:
