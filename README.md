@@ -1,3 +1,7 @@
+[![Build Status](https://travis-ci.org/ivahaev/mongofil.svg?branch=master)](https://travis-ci.org/ivahaev/mongofil)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ivahaev/mongofil)](https://goreportcard.com/report/github.com/ivahaev/mongofil)
+[![License](https://img.shields.io/badge/license-MIT%20v3-blue.svg)](https://github.com/github.com/ivahaev/blob/master/LICENSE)
+
 # mongofil
 Checking if JSON matches mongodb query and finding matched documents in JSON array.
 Project is on very early stage. Contributors welcome!
