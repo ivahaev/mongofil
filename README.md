@@ -1,11 +1,13 @@
 # mongofil
 Checking if JSON matches mongodb query and finding matched documents in JSON array.
+Project is on very early stage. Contributors welcome!
 
 
 ## Roadmap:
 
 - [ ] Support for nested documents and arrays
 - [ ] Filter JSON array to only matched documents
+- [ ] Caching extracted values to use them in multiple operators
 
 ### Implement query operators
 #### Comparison
