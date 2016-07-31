@@ -38,7 +38,7 @@ Project is on very early stage. Contributors welcome!
 
 #### Evaluation
 - [ ] $mod	Performs a modulo operation on the value of a field and selects documents with a specified result.
-- [ ] $regex	Selects documents where values match a specified regular expression.
+- [x] $regex	Selects documents where values match a specified regular expression.
 - [ ] $text	Performs text search.
 - [ ] $where	Matches documents that satisfy a JavaScript expression.
 
