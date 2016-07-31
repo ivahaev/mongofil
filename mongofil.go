@@ -147,6 +147,13 @@ func NewQuery(query map[string]interface{}) (*Query, error) {
 					}
 					q.and = append(q.and, em)
 				}
+				if val["$regex"] != nil {
+					rm, err := newRegexMatcher(field, val)
+					if err != nil {
+						return nil, err
+					}
+					q.and = append(q.and, rm)
+				}
 			}
 		}
 	}

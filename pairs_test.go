@@ -100,6 +100,21 @@ var pairs = []testPair{
 		doc:           []byte(`{"name": "Vasya", "age": 50}`),
 		shouldMatched: false,
 	},
+	{
+		q:             []byte(`{"$and": [{"name": "Vasya"}, {"lastName": {"$regex": "^.*ov$", "$options": "i"}}]}`),
+		doc:           []byte(`{"name": "Vasya", "lastName": "Ivanov", "age": 50}`),
+		shouldMatched: true,
+	},
+	{
+		q:             []byte(`{"$and": [{"name": "Vasya"}, {"lastName": {"$regex": "^.*ov$", "$options": "i"}}]}`),
+		doc:           []byte(`{"name": "Vasya", "lastName": "IVANOV", "age": 50}`),
+		shouldMatched: true,
+	},
+	{
+		q:             []byte(`{"$and": [{"name": "Vasya"}, {"lastName": {"$regex": "^.*ov$", "$options": "i"}}]}`),
+		doc:           []byte(`{"name": "Vasya", "lastName": "Rabinovitch", "age": 50}`),
+		shouldMatched: false,
+	},
 }
 
 func TestMatchPairs(t *testing.T) {
@@ -111,9 +126,9 @@ func TestMatchPairs(t *testing.T) {
 				err := json.Unmarshal(p.q, &q)
 				g.Assert(err == nil).IsTrue()
 				matched, err := Match(q, p.doc)
-				g.Assert(err == nil).IsTrue()
+				g.Assert(err == nil).IsTrue("err should be nil")
 				if matched != p.shouldMatched {
-					fmt.Println(fmt.Sprintf(`Failed query: %s, with document: %s`, string(p.q), string(p.doc)))
+					fmt.Println(fmt.Sprintf(`Failed query: %s, with document: %s. Expected: %v`, string(p.q), string(p.doc), p.shouldMatched))
 				}
 				g.Assert(matched).Equal(p.shouldMatched)
 			}
