@@ -12,6 +12,7 @@ type testPair struct {
 	q             []byte
 	doc           []byte
 	shouldMatched bool
+	err           error
 }
 
 var pairs = []testPair{
@@ -111,9 +112,43 @@ var pairs = []testPair{
 		shouldMatched: true,
 	},
 	{
+		q:             []byte(`{"$nor": [{"name": "Vasya"}, {"lastName": {"$regex": "^.*ovitch$", "$options": "i"}}]}`),
+		doc:           []byte(`{"name": "Vasya", "lastName": "IVANOV", "age": 50}`),
+		shouldMatched: false,
+	},
+	{
+		q:             []byte(`{"$nor": [{"name": "vasya"}, {"lastName": {"$regex": "^.*ovitch$", "$options": "i"}}]}`),
+		doc:           []byte(`{"name": "Vasya", "lastName": "IVANOV", "age": 50}`),
+		shouldMatched: true,
+	},
+	{
 		q:             []byte(`{"$and": [{"name": "Vasya"}, {"lastName": {"$regex": "^.*ov$", "$options": "i"}}]}`),
 		doc:           []byte(`{"name": "Vasya", "lastName": "Rabinovitch", "age": 50}`),
 		shouldMatched: false,
+	},
+	{
+		q:             []byte(`{"$and": [{"name": "Vasya"}, 42]}`),
+		doc:           []byte(`{"name": "Vasya", "lastName": "Rabinovitch", "age": 50}`),
+		shouldMatched: false,
+		err:           ErrAndMustBeArray,
+	},
+	{
+		q:             []byte(`{"$and": 42}`),
+		doc:           []byte(`{"name": "Vasya", "lastName": "Rabinovitch", "age": 50}`),
+		shouldMatched: false,
+		err:           ErrAndMustBeArray,
+	},
+	{
+		q:             []byte(`{"$or": [{"name": "Vasya"}, 42]}`),
+		doc:           []byte(`{"name": "Vasya", "lastName": "Rabinovitch", "age": 50}`),
+		shouldMatched: false,
+		err:           ErrOrMustBeArray,
+	},
+	{
+		q:             []byte(`{"$or": 42}`),
+		doc:           []byte(`{"name": "Vasya", "lastName": "Rabinovitch", "age": 50}`),
+		shouldMatched: false,
+		err:           ErrOrMustBeArray,
 	},
 }
 
@@ -126,7 +161,15 @@ func TestMatchPairs(t *testing.T) {
 				err := json.Unmarshal(p.q, &q)
 				g.Assert(err == nil).IsTrue()
 				matched, err := Match(q, p.doc)
-				g.Assert(err == nil).IsTrue("err should be nil")
+				g.Assert(err == p.err).IsTrue(func() string {
+					if err != p.err {
+						fmt.Println(fmt.Sprintf(`Failed query: %s, with document: %s. Error expected: %v, but received: %v`, string(p.q), string(p.doc), p.err, err))
+					}
+					if p.err != nil {
+						return p.err.Error()
+					}
+					return ""
+				}())
 				if matched != p.shouldMatched {
 					fmt.Println(fmt.Sprintf(`Failed query: %s, with document: %s. Expected: %v`, string(p.q), string(p.doc), p.shouldMatched))
 				}
