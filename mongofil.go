@@ -42,6 +42,13 @@ func NewQuery(query map[string]interface{}) (*Query, error) {
 				return nil, err
 			}
 			q.and = append(q.and, em)
+		case int:
+			v = float64(v.(int))
+			em, err := newEqMatcher(field, v, false)
+			if err != nil {
+				return nil, err
+			}
+			q.and = append(q.and, em)
 		case map[string]interface{}:
 			val := v.(map[string]interface{})
 			err := q.appendFieldCondition(field, val)
