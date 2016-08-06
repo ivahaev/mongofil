@@ -150,6 +150,36 @@ var pairs = []testPair{
 		shouldMatched: false,
 		err:           ErrOrMustBeArray,
 	},
+	{
+		q:             []byte(`{"tools": "hammer"}`),
+		doc:           []byte(`{"name": "Vasya", "tools": ["hammer", "screwdriver"]}`),
+		shouldMatched: true,
+	},
+	{
+		q:             []byte(`{"tools": {"$ne": "hammer"}}`),
+		doc:           []byte(`{"name": "Vasya", "tools": ["hammer", "screwdriver"]}`),
+		shouldMatched: false,
+	},
+	{
+		q:             []byte(`{"$and": [{"tools": "hammer"}, {"tools": "screwdriver"}]}`),
+		doc:           []byte(`{"name": "Vasya", "tools": ["hammer", "screwdriver"]}`),
+		shouldMatched: true,
+	},
+	{
+		q:             []byte(`{"$nor": [{"tools": "hammer"}, {"tools": "screwdriver"}]}`),
+		doc:           []byte(`{"name": "Vasya", "tools": ["hammer", "screwdriver"]}`),
+		shouldMatched: false,
+	},
+	{
+		q:             []byte(`{"$nor": [{"tools": "hand"}, {"tools": "screwdriver"}]}`),
+		doc:           []byte(`{"name": "Vasya", "tools": ["hammer", "screwdriver"]}`),
+		shouldMatched: false,
+	},
+	{
+		q:             []byte(`{"$nor": [{"tools": "hand"}, {"tools": "screw"}]}`),
+		doc:           []byte(`{"name": "Vasya", "tools": ["hammer", "screwdriver"]}`),
+		shouldMatched: true,
+	},
 }
 
 func TestMatchPairs(t *testing.T) {

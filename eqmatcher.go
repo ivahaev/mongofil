@@ -1,6 +1,10 @@
 package mongofil
 
-import "github.com/buger/jsonparser"
+import (
+	"strings"
+
+	"github.com/buger/jsonparser"
+)
 
 type eqMatcher struct {
 	propName  string
@@ -22,6 +26,10 @@ func (m *eqMatcher) Match(doc []byte) bool {
 	if err != nil {
 		return m.invert
 	}
+	return m.matchValue(val, typ, m.propName)
+}
+
+func (m *eqMatcher) matchValue(val []byte, typ jsonparser.ValueType, propName string) bool {
 	switch typ {
 	case jsonparser.String:
 		if m.condition.typ != String {
@@ -41,6 +49,21 @@ func (m *eqMatcher) Match(doc []byte) bool {
 		if conVal == v {
 			return !m.invert
 		}
+	case jsonparser.Array:
+		keys := strings.Split(propName, ".")
+		if len(keys) == 0 {
+			keys = nil
+		} else {
+			keys = keys[1:]
+		}
+		var matched bool
+		jsonparser.ArrayEach(val, func(value []byte, dataType jsonparser.ValueType, _ int, _ error) {
+			if matched {
+				return
+			}
+			matched = m.matchValue(value, dataType, strings.Join(keys, "."))
+		}, keys...)
+		return matched && !m.invert
 	}
 	return m.invert
 }
