@@ -180,6 +180,11 @@ var pairs = []testPair{
 		doc:           []byte(`{"name": "Vasya", "tools": ["hammer", "screwdriver"]}`),
 		shouldMatched: true,
 	},
+	{
+		q:             []byte(`{"$nor": [{"tools": 24}, {"tools": "hand"}, {"tools": "screw"}]}`),
+		doc:           []byte(`{"name": "Vasya", "tools": [42, "hammer", "screwdriver"]}`),
+		shouldMatched: true,
+	},
 }
 
 func TestMatchPairs(t *testing.T) {
